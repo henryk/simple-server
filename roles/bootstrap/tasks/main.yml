@@ -22,10 +22,6 @@
     regexp: '^127\.0\.1\.1'
     line: '127.0.1.1 {{ hostname }} {{ hostname.split(".")[0] }}'
 
-- name: Set hostname
-  hostname:
-    name: '{{ hostname }}'
-
 - name: Record hostname and domain in /etc/hostname
   copy:
     content: '{{ hostname }}'
@@ -35,4 +31,6 @@
     mode: '0644'
 
 - name: Reboot system to complete bootstrap
-  command: shutdown -r now 'Rebooting to complete system bootstrap'
+  command: systemd-run --on-active=10 systemctl reboot
+  async: 0
+  poll: 0
