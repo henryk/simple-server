@@ -68,6 +68,22 @@
       script: scripts/install.sh -f
       args:
         creates: /etc/webmin/virtual-server/config
+      notify:
+        - virtualmin first install
+  handlers:
+    - name: virtualmin first install
+      lineinfile:
+        state: 'present'
+        dest: '{{ item.dest }}'
+        line: '{{ item.line }}'
+        regexp: '{{ item.regexp }}'
+      with_items:
+        - { dest: '/etc/webmin/config', line: 'theme=authentic-theme', regexp: '^theme='}
+        - { dest: '/etc/webmin/miniserv.conf', line: 'preroot=authentic-theme', regexp: '^preroot='}
+      notify:
+        - restart virtualmin
+    - name: restart virtualmin
+      service: name=webmin state=restarted
 
 
 - name: Perform upgrades and reboot hosts
