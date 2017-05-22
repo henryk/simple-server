@@ -837,11 +837,11 @@ install_virtualmin_release () {
 				echo "deb http://${LOGIN}software.virtualmin.com/${repopath}$os_type/ $repo main" >> /etc/apt/sources.list
 			done
 			# Install our keys
-			logger_info "Installing Webmin and Virtualmin package signing keys..."
-			download "http://software.virtualmin.com/lib/RPM-GPG-KEY-virtualmin"
-			download "http://software.virtualmin.com/lib/RPM-GPG-KEY-webmin"
-			logger_info `apt-key add RPM-GPG-KEY-virtualmin`
-			logger_info `apt-key add RPM-GPG-KEY-webmin`
+			##logger_info "Installing Webmin and Virtualmin package signing keys..."
+			##download "http://software.virtualmin.com/lib/RPM-GPG-KEY-virtualmin"
+			##download "http://software.virtualmin.com/lib/RPM-GPG-KEY-webmin"
+			##logger_info `apt-key add RPM-GPG-KEY-virtualmin`
+			##logger_info `apt-key add RPM-GPG-KEY-webmin`
 			logger_info `apt-get update`
 			logger_info "Removing Debian standard Webmin package, if they exist..."
 			logger_info "Removing Debian apache packages..."
