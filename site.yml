@@ -1,0 +1,67 @@
+---
+- name: Install and configure software
+  hosts: all
+  tasks:
+    - name: Install Apache, PHP7, MariaDB
+      package:
+        name: '{{ item }}'
+        state: 'present'
+      with_items:
+        - mariadb-client
+        - mariadb-server
+        - apache2
+        - apache2-utils
+        - php7.0-gd
+        - php7.0-mysql
+        - php7.0-imap
+        - php7.0-cli
+        - php7.0-fpm
+        - libapache2-mod-fcgid
+        - php-pear
+        - php-auth
+        - php7.0-mcrypt
+        - php7.0-curl
+        - php7.0-intl
+        - php7.0-pspell
+        - php7.0-recode
+        - php7.0-sqlite3
+        - php7.0-tidy
+        - php7.0-xmlrpc
+        - php7.0-xsl
+        - php-imagick
+        - php-gettext
+        - php7.0-zip
+        - php7.0-mbstring
+    - name: Enable Apache modules
+      apache2_module:
+        name: '{{ item }}'
+        state: 'present'
+      with_items:
+        - actions
+        - rewrite
+        - alias
+      notify:
+        - restart apache
+    - name: Enable PHP via fpm
+      file:
+        path: /etc/apache2/conf-enabled/php7.0-fpm.conf
+        src: ../conf-available/php7.0-fpm.conf
+        state: link
+      notify:
+        - restart apache
+  handlers:
+    - name: restart apache
+      service:
+        name: apache2
+        state: restarted
+
+
+
+- name: Perform upgrades and reboot hosts
+  hosts: all
+  tasks:
+  - name: Update and upgrade all packages
+    apt: update_cache=yes autoremove=yes upgrade=yes
+  - name: Reboot system if required
+    command: shutdown -r now 'Rebooting to complete system upgrade'
+             removes=/var/run/reboot-required
