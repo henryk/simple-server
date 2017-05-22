@@ -70,6 +70,17 @@
         creates: /etc/webmin/virtual-server/config
       notify:
         - virtualmin first install
+    - name: Install additional packages
+      package:
+        name: '{{ item }}'
+        state: 'present'
+      with_items:
+        - 'webmin-virtualmin-mailman'
+        - 'letsencrypt'
+      notify:
+        - restart virtualmin
+
+      
   handlers:
     - name: virtualmin first install
       lineinfile:
