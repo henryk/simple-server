@@ -11,6 +11,8 @@
   with_items:
     - 'python-pip'
     - 'lsb-release'
+    - 'aptitude'
+    - 'unattended-upgrades'
 
 - name: Save hostname and domain in /etc/hosts
   lineinfile:
@@ -31,3 +33,6 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
+
+- name: Reboot system to complete bootstrap
+  command: shutdown -r now 'Rebooting to complete system bootstrap'
