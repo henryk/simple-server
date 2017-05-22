@@ -1,0 +1,33 @@
+- name: Bootstrap Python support on the host
+  raw:  'apt-get update ; apt-get --no-install-recommends -yq install python python-apt'
+
+- name: Gather facts
+  setup:
+
+- name: Make sure essential software is installed
+  package:
+    name: '{{ item }}'
+    state: 'present'
+  with_items:
+    - 'python-pip'
+    - 'lsb-release'
+
+- name: Save hostname and domain in /etc/hosts
+  lineinfile:
+    state: 'present'
+    dest: '/etc/hosts'
+    insertafter: '^127\.0\.0\.1'
+    regexp: '^127\.0\.1\.1'
+    line: '127.0.1.1 {{ hostname }} {{ hostname.split(".")[0] }}'
+
+- name: Set hostname
+  hostname:
+    name: '{{ hostname }}'
+
+- name: Record hostname and domain in /etc/hostname
+  copy:
+    content: '{{ hostname }}'
+    dest: '/etc/hostname'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
