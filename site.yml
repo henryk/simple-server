@@ -77,8 +77,17 @@
       with_items:
         - 'webmin-virtualmin-mailman'
         - 'letsencrypt'
+        - 'php7.0-zip'
       notify:
         - restart virtualmin
+    - name: Active apache modules
+      apache2_module:
+        name: '{{ item }}'
+        state: 'present'
+      with_items:
+        - 'rewrite'
+      notify:
+        - restart apache2
 
       
   handlers:
@@ -95,6 +104,8 @@
         - restart virtualmin
     - name: restart virtualmin
       service: name=webmin state=restarted
+    - name: restart apache2
+      service: name=apache2 state=restarted
 
 
 - name: Perform upgrades and reboot hosts
