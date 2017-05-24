@@ -80,7 +80,7 @@
         - 'php7.0-zip'
       notify:
         - restart virtualmin
-    - name: Active apache modules
+    - name: Activate apache modules
       apache2_module:
         name: '{{ item }}'
         state: 'present'
@@ -88,6 +88,18 @@
         - 'rewrite'
       notify:
         - restart apache2
+    - name: Enable password SSH logins for users
+      lineinfile:
+        state: 'present'
+        dest: '/etc/ssh/sshd_config'
+        line: '{{ item.line }}'
+        regexp: '{{ item.regexp }}'
+      with_items:
+        - { line: 'PermitRootLogin without-password', regexp: '^\s*PermitRootLogin\s'}
+        - { line: 'ChallengeResponseAuthentication yes', regexp: '^\s*ChallengeResponseAuthentication\s'}
+        - { line: 'PasswordAuthentication no', regexp: '^\s*PasswordAuthentication\s'}
+      notify:
+        - restart ssh
 
       
   handlers:
@@ -106,6 +118,8 @@
       service: name=webmin state=restarted
     - name: restart apache2
       service: name=apache2 state=restarted
+    - name: restart ssh
+      service: name=ssh state=restarted
 
 
 - name: Perform upgrades and reboot hosts
