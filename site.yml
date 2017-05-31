@@ -88,6 +88,29 @@
         - 'rewrite'
       notify:
         - restart apache2
+    - name: Configure strong ciphers for HTTPS 1/2
+      copy:
+        content: |
+          <IfModule mod_ssl.c>
+            SSLHonorCipherOrder on
+            SSLProtocol -SSLv3 -TLSv1 -TLSv1.1
+            SSLCipherSuite ECDHE:EECDH:DHE:EDH:!MEDIUM:!LOW:!EXPORT:!EXPORT40:!EXPORT56:!AES128:!CAMELLIA:!3DES:!MD5:!aNULL:!eNULL
+          </IfModule>
+        dest: '/etc/apache2/conf-available/strong-ciphers.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      notify:
+        - restart apache2
+    - name: Configure strong ciphers for HTTP 2/2
+      file:
+        src: '/etc/apache2/conf-available/strong-ciphers.conf'
+        dest: '/etc/apache2/conf-enabled/strong-ciphers.conf'
+        owner: 'root'
+        group: 'root'
+        state: link
+      notify:
+        - restart apache2
     - name: Enable password SSH logins for users
       lineinfile:
         state: 'present'
