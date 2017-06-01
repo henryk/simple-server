@@ -20,6 +20,13 @@
     - { question: 'clamav-milter/RejectMsg', value: 'Message rejected because a virus was detected: %v' }
     - { question: 'clamav-milter/SupportMultipleRecipients', value: 'true' }
     - { question: 'clamav-milter/MilterSocket', value: '/var/spool/postfix/var/run/clamav/clamav-milter.ctl' }
+    - { question: 'clamav-milter/debconf', value: 'true', vtype: 'boolean' }
+
+- name: Remove clamav-milter configuration file
+  file: name=/etc/clamav/clamav-milter.conf state=absent
+
+- name: Apply debconf
+  command: dpkg-reconfigure -f noninteractive clamav-milter
 
 - name: Start and enable clamav-daemon
   service: name=clamav-daemon state=started enabled=true
