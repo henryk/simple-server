@@ -102,10 +102,32 @@
         mode: '0644'
       notify:
         - restart apache2
-    - name: Configure strong ciphers for HTTP 2/2
+    - name: Configure strong ciphers for HTTPS 2/2
       file:
         src: '/etc/apache2/conf-available/strong-ciphers.conf'
         dest: '/etc/apache2/conf-enabled/strong-ciphers.conf'
+        owner: 'root'
+        group: 'root'
+        state: link
+      notify:
+        - restart apache2
+    - name: Configure stapling for HTTPS 1/2
+      copy:
+        content: |
+          <IfModule mod_ssl.c>
+            SSLUseStapling On
+            SSLStaplingCache shmcb:${APACHE_RUN_DIR}/ssl_stapling(32768)
+          </IfModule>
+        dest: '/etc/apache2/conf-available/ssl-stapling.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      notify:
+        - restart apache2
+    - name: Configure stapling for HTTPS 2/2
+      file:
+        src: '/etc/apache2/conf-available/ssl-stapling.conf'
+        dest: '/etc/apache2/conf-enabled/ssl-stapling.conf'
         owner: 'root'
         group: 'root'
         state: link
