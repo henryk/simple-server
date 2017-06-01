@@ -167,10 +167,12 @@
     - name: restart ssh
       service: name=ssh state=restarted
 
-- name: Set up and configure clamav-milter
+- name: Set up and configure Postfix filters
   hosts: all
   roles:
     - clamav-milter
+    - postfix-spf
+
 
 - name: Perform upgrades and reboot hosts
   hosts: all
