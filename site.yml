@@ -78,8 +78,17 @@
         - 'webmin-virtualmin-mailman'
         - 'letsencrypt'
         - 'php7.0-zip'
+        - 'clamav-unofficial-sigs'
       notify:
         - restart virtualmin
+    - name: Install clamav-milter
+      package:
+        name: clamav-milter
+        state: present
+      register: clamav_milter_install
+    - name: Configure clamav-milter
+      include_role: name=clamav-milter
+      when: clamav_milter_install.changed
     - name: Activate apache modules
       apache2_module:
         name: '{{ item }}'
