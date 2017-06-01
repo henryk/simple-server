@@ -81,14 +81,6 @@
         - 'clamav-unofficial-sigs'
       notify:
         - restart virtualmin
-    - name: Install clamav-milter
-      package:
-        name: clamav-milter
-        state: present
-      register: clamav_milter_install
-    - name: Configure clamav-milter
-      include_role: name=clamav-milter
-      when: clamav_milter_install.changed
     - name: Activate apache modules
       apache2_module:
         name: '{{ item }}'
@@ -175,6 +167,10 @@
     - name: restart ssh
       service: name=ssh state=restarted
 
+- name: Set up and configure clamav-milter
+  hosts: all
+  roles:
+    - clamav-milter
 
 - name: Perform upgrades and reboot hosts
   hosts: all

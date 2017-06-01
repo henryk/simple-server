@@ -9,33 +9,22 @@
 - name: Configure clamav-milter debconf
   debconf:
     name: clamav-milter
-    question: '{{ item.question }}'
+    question: 'clamav-milter/{{ item.question }}'
     value: '{{ item.value }}'
     vtype: '{{ item.vtype if "vtype" in item else "string" }}'
-  with_items:
-    - { question: 'clamav-milter/AddGroups', value: 'postdrop clamav' }
-    - { question: 'clamav-milter/LogClean', value: 'Basic', vtype: 'select' }
-    - { question: 'clamav-milter/LogInfected', value: 'Basic', vtype: 'select' }
-    - { question: 'clamav-milter/OnInfected', value: 'Reject', type: 'select' }
-    - { question: 'clamav-milter/RejectMsg', value: 'Message rejected because a virus was detected: %v' }
-    - { question: 'clamav-milter/SupportMultipleRecipients', value: 'true' }
-    - { question: 'clamav-milter/MilterSocket', value: '/var/spool/postfix/var/run/clamav/clamav-milter.ctl' }
-    - { question: 'clamav-milter/debconf', value: 'true', vtype: 'boolean' }
-
-- name: Remove clamav-milter configuration file
-  file: name=/etc/clamav/clamav-milter.conf state=absent
-
-- name: Apply debconf
-  command: dpkg-reconfigure -f noninteractive clamav-milter
+  with_items: "{{clamav_configuration}}"
+  notify: Apply clamav-milter debconf
 
 - name: Start and enable clamav-daemon
   service: name=clamav-daemon state=started enabled=true
-- name: (Re)start and enable clamav-milter
-  service: name=clamav-milter state=restarted enabled=true
+- name: Enable clamav-milter
+  service: name=clamav-milter enabled=true
+  notify: restart clamav-milter
 
-# FIXME: This always notifies
 - name: Prepare Postfix for milters
-  command: postconf -e milter_protocol=2 milter_default_action=accept
+  shell: md5sum /etc/postfix/main.cf; postconf -e milter_protocol=2 milter_default_action=accept; md5sum /etc/postfix/main.cf
+  register: postconf_enable_milter_output
+  changed_when: postconf_enable_milter_output.stdout_lines[0] != postconf_enable_milter_output.stdout_lines[-1]
   notify: restart postfix
 
 - name: Get smtpd_milters
