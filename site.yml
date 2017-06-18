@@ -1,4 +1,12 @@
 ---
+- name: Check ansible version
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Ensure Ansible version
+      fail: msg="This playbook requires Ansible 2.1 or greater."
+      when: ansible_version.major < 2 or (ansible_version.major == 2 and ansible_version.minor < 1)
+
 - name: Install webmin/usermin/virtualmin
   hosts: all
   tasks:
@@ -172,13 +180,14 @@
   roles:
     - clamav-milter
     - postfix-spf
+    - clamav-unofficial-sigs
 
 
 - name: Perform upgrades and reboot hosts
   hosts: all
   tasks:
-  - name: Update and upgrade all packages
-    apt: update_cache=yes autoremove=yes upgrade=yes
-  - name: Reboot system if required
-    command: shutdown -r now 'Rebooting to complete system upgrade'
-             removes=/var/run/reboot-required
+    - name: Update and upgrade all packages
+      apt: update_cache=yes autoremove=yes upgrade=yes
+    - name: Reboot system if required
+      command: shutdown -r now 'Rebooting to complete system upgrade'
+               removes=/var/run/reboot-required
