@@ -1,0 +1,4 @@
+- name: reboot for bootstrap
+  command: systemd-run --on-active=10 systemctl reboot
+  async: 0
+  poll: 0

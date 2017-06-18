@@ -29,8 +29,27 @@
     owner: 'root'
     group: 'root'
     mode: '0644'
+  notify: reboot for bootstrap
 
-- name: Reboot system to complete bootstrap
-  command: systemd-run --on-active=10 systemctl reboot
-  async: 0
-  poll: 0
+- name: Create swapfile
+  command: "dd if=/dev/zero of={{ swap_path }} bs=1M count={{ swap_size_mb }} creates={{ swap_path }}"
+  register: write_swapfile
+  when: (ansible_memory_mb.real.total+ansible_memory_mb.swap.total < min_memory_mb)
+
+- name: Set swapfile permissions
+  file: path="{{ swap_path }}" mode=600
+  when: (ansible_memory_mb.real.total+ansible_memory_mb.swap.total < min_memory_mb)
+
+- name: Build swapfile
+  command: "mkswap {{ swap_path }}"
+  register: create_swapfile
+  when: (ansible_memory_mb.real.total+ansible_memory_mb.swap.total < min_memory_mb) and write_swapfile.changed
+
+- name: Enable swapfile
+  command: "swapon {{ swap_path }}"
+  when: (ansible_memory_mb.real.total+ansible_memory_mb.swap.total < min_memory_mb) and create_swapfile.changed
+
+- name: Add swapfile to /etc/fstab
+  lineinfile: dest=/etc/fstab line="{{ swap_path }}   none    swap    sw    0   0" state=present
+  notify: reboot for bootstrap
+  when: (ansible_memory_mb.real.total+ansible_memory_mb.swap.total < min_memory_mb)
