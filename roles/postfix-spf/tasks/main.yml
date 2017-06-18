@@ -25,5 +25,5 @@
   changed_when: false
 - name: Set smtpd_recipient_restrictions
   command: postconf -e "smtpd_recipient_restrictions = {{ smtpd_recipient_restrictions.stdout }} check_policy_service unix:private/policyd-spf"
-  when: not "var/run/clamav/clamav-milter.ctl" in smtpd_recipient_restrictions.stdout
+  when: not "private/policyd-spf" in smtpd_recipient_restrictions.stdout
   notify: restart postfix
