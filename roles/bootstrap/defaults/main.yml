@@ -1,4 +1,3 @@
-hostname: '{{ inventory_hostname }}'
 swap_path: '/swapfile.sys'
 swap_size_mb: 1700
 min_memory_mb: 2048

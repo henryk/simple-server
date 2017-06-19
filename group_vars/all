@@ -1,2 +1,5 @@
+hostname: '{{ inventory_hostname }}'
 ansible_user: root
 ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+
+mailman_primary_domain: '{{ hostname }}'

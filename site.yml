@@ -154,7 +154,15 @@
         - { line: 'PasswordAuthentication no', regexp: '^\s*PasswordAuthentication\s'}
       notify:
         - restart ssh
-
+    - name: Configure mailman domain
+      lineinfile:
+        state: 'present'
+        dest: '/etc/mailman/mm_cfg.py'
+        line: "{{item}} = '{{ mailman_primary_domain }}'"
+        regexp: '^#?\s*{{item}}\s+='
+      with_items:
+        - DEFAULT_EMAIL_HOST
+        - DEFAULT_URL_HOST
       
   handlers:
     - name: virtualmin first install
