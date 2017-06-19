@@ -86,7 +86,6 @@
         - 'webmin-virtualmin-mailman'
         - 'letsencrypt'
         - 'php7.0-zip'
-        - 'clamav-unofficial-sigs'
       notify:
         - restart virtualmin
     - name: Activate apache modules

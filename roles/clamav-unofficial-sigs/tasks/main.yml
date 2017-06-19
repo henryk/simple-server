@@ -2,10 +2,10 @@
   stat: path=/etc/clamav-unofficial-sigs
   register: clamav_unofficial_sigs__stat
 
-- block:
-    - name: "Make sure the 'official' unofficial sigs package is uninstalled"
-      apt: name=clamav-unofficial-sigs state=absent purge=yes
+- name: "Make sure the 'official' unofficial sigs package is uninstalled"
+  apt: name=clamav-unofficial-sigs state=absent
 
+- block:
     - name: "Download clamav-unofficial-sigs version {{clamav_unofficial_sigs.version}}"
       get_url:
         url: "https://github.com/extremeshok/clamav-unofficial-sigs/archive/{{clamav_unofficial_sigs.version}}.tar.gz"
