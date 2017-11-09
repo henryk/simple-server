@@ -1,0 +1,3 @@
+[submodule "central-services"]
+	path = central-services
+	url = https://github.com/henryk/central-services.git
