@@ -186,8 +186,10 @@
   hosts: all
   roles:
     - clamav-milter
+    - postfix-restrictions
     - postfix-spf
     - clamav-unofficial-sigs
+    - postfix-pflogsumm
 
 
 - name: Perform upgrades and reboot hosts
